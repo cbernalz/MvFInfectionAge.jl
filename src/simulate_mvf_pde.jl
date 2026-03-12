@@ -70,8 +70,8 @@ function simulate_mvf_pde(
         if haskey(obs_lookup, k)
             obs_i = obs_lookup[k]
 
-            I_current = h * sum(u .* inf_prob)
-            W_current = h * sum(u .* s)
+            I_current = h * dot(u, inf_prob)
+            W_current = h * dot(u, s)
 
             if W_current <= zero(T) || !isfinite(W_current)
                 throw(ArgumentError("Non-positive or non-finite wastewater mean at time index $k."))

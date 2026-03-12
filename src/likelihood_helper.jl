@@ -68,7 +68,6 @@ function likelihood_helper(
 
         # precompute decorated-integral weights
         inf_weights = exp.(-γ .* grid_a)
-        shed_weights = 10 .^ s
 
         sim = simulate_mvf_pde(
             grid_t,
