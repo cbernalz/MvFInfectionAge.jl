@@ -77,7 +77,7 @@ function likelihood_helper(
             g_scaled,
             ww_inx,
             inf_weights,
-            shed_weights,
+            s,
         )
         
         return (
