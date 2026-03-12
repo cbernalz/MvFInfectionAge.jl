@@ -48,30 +48,19 @@ function simulate_mvf_pde(
     I_means = zeros(T, n_obs)
     log_W_means = zeros(T, n_obs)
     obs_lookup = Dict{Int,Int}()
-    for (i, idx) in enumerate(ww_inx)
-        obs_lookup[idx] = i
-    end
-
-    if haskey(obs_lookup, 1)
-        obs_i = obs_lookup[1]
-
-        I_val = h * dot(u, inf_prob)
-        W_val = h * dot(u, s)
-
-        if W_val <= zero(T) || !isfinite(W_val)
-            throw(ArgumentError("Non-positive or non-finite wastewater mean at initial time."))
+    for (i, idx) in enumerate(t)
+        if idx in ww_inx
+            obs_lookup[i] = idx
         end
-
-        I_means[obs_i] = I_val
-        log_W_means[obs_i] = log(W_val)
     end
+
 
     for k in 2:Nt
         # boundary condition for age
-        new_infections = c[k] * h * dot(τ, u)
+        new_infections = c[k] * h * sum(@. τ * u)
 
         # backward scheme
-        @inbounds for j in L:-1:2
+        for j in L:-1:2
             u[j] = u[j-1]
         end
 
@@ -81,15 +70,15 @@ function simulate_mvf_pde(
         if haskey(obs_lookup, k)
             obs_i = obs_lookup[k]
 
-            I_val = h * dot(u, inf_prob)
-            W_val = h * dot(u, s)
+            I_current = h * sum(u .* inf_prob)
+            W_current = h * sum(u .* s)
 
-            if W_val <= zero(T) || !isfinite(W_val)
+            if W_current <= zero(T) || !isfinite(W_current)
                 throw(ArgumentError("Non-positive or non-finite wastewater mean at time index $k."))
             end
 
-            I_means[obs_i] = I_val
-            log_W_means[obs_i] = log(W_val)
+            I_means[obs_i] = I_current
+            log_W_means[obs_i] = log(W_current)
         end
     end
 
