@@ -48,10 +48,8 @@ function simulate_mvf_pde(
     I_means = zeros(T, n_obs)
     log_W_means = zeros(T, n_obs)
     obs_lookup = Dict{Int,Int}()
-    for (i, idx) in enumerate(t)
-        if idx in ww_inx
-            obs_lookup[i] = idx
-        end
+    for (i, idx) in enumerate(ww_inx)
+        obs_lookup[idx] = i
     end
 
 
