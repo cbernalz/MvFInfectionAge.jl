@@ -52,6 +52,17 @@ function simulate_mvf_pde(
         obs_lookup[idx] = i
     end
 
+    #if haskey(obs_lookup, 1)
+    #    I_current = h * dot(u, inf_prob)
+    #    W_current = h * dot(u, s)
+
+    #    if W_current <= zero(T) || !isfinite(W_current)
+    #        throw(ArgumentError("Non-positive or non-finite wastewater mean at time index 1."))
+    #    end
+    #    I_means[1] = I_current
+    #    log_W_means[1] = log(W_current)
+    #end
+
 
     for k in 2:Nt
         # boundary condition for age
@@ -71,12 +82,33 @@ function simulate_mvf_pde(
             I_current = h * dot(u, inf_prob)
             W_current = h * dot(u, s)
 
-            if W_current <= zero(T) || !isfinite(W_current)
-                throw(ArgumentError("Non-positive or non-finite wastewater mean at time index $k."))
+            if W_current == zero(T)
+                @warn "Zero wastewater mean at time index $k; adding 1e-10."
+            elseif !isfinite(W_current)
+                throw(ArgumentError("Non-finite wastewater mean at time index $k."))
             end
+            #if W_current <= zero(T) || !isfinite(W_current)
+            #    throw(ArgumentError("Non-positive or non-finite wastewater mean at time index $k."))
+            #end
+
+            #if W_current <= zero(T) || !isfinite(W_current)
+            #    println("k = ", k)
+            #    println("minimum(u) = ", minimum(u))
+            #    println("maximum(u) = ", maximum(u))
+            #    println("any nonfinite u = ", any(!isfinite, u))
+            #    println("minimum(s) = ", minimum(s))
+            #    println("maximum(s) = ", maximum(s))
+            #    println("any nonfinite s = ", any(!isfinite, s))
+            #    println("minimum(c) = ", minimum(c))
+            #    println("maximum(c) = ", maximum(c))
+            #    println("new_infections = ", new_infections)
+            #    println("W_current = ", W_current)
+            #    plot(u, label="u")
+            #    error("Debug stop")
+            #end
 
             I_means[obs_i] = I_current
-            log_W_means[obs_i] = log(W_current)
+            log_W_means[obs_i] = log(W_current + 1e-10) # adding small constant to avoid log of zero
         end
     end
 
