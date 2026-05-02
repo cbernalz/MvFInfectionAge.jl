@@ -82,11 +82,11 @@ function simulate_mvf_pde(
             I_current = h * dot(u, inf_prob)
             W_current = h * dot(u, s)
 
-            if W_current == zero(T)
-                @warn "Zero wastewater mean at time index $k; adding 1e-10."
-            elseif !isfinite(W_current)
-                throw(ArgumentError("Non-finite wastewater mean at time index $k."))
-            end
+            #if W_current == zero(T)
+            #    @warn "Zero wastewater mean at time index $k; adding 1e-10."
+            #elseif !isfinite(W_current)
+            #    throw(ArgumentError("Non-finite wastewater mean at time index $k."))
+            #end
             #if W_current <= zero(T) || !isfinite(W_current)
             #    throw(ArgumentError("Non-positive or non-finite wastewater mean at time index $k."))
             #end

@@ -75,3 +75,77 @@ function ChainsCustomIndex(c::Chains, indices_to_keep::BitMatrix)
 
   Chains(aa, c.logevidence, c.name_map, c.info)
 end
+
+
+"""
+    bisect_root(...)
+
+
+"""
+function bisect_root(f, lo, hi; maxiter=100, tol=1e-10)
+    flo = f(lo)
+    fhi = f(hi)
+
+    if signbit(flo) == signbit(fhi)
+        throw(ArgumentError("Root is not bracketed on [lo, hi]."))
+    end
+
+    mid = (lo + hi) / 2
+    fmid = f(mid)
+
+    for _ in 1:maxiter
+        mid = (lo + hi) / 2
+        fmid = f(mid)
+
+        if abs(hi - lo) < tol
+            return mid
+        end
+
+        if signbit(flo) == signbit(fmid)
+            lo = mid
+            flo = fmid
+        else
+            hi = mid
+            fhi = fmid
+        end
+    end
+
+    return mid
+end
+
+
+"""
+"""
+function create_phase_type_τ(
+    grid_t,
+    grid_a,
+    n_infection_comp,
+    exposed_rate,
+    infection_rate
+)
+    nu = n_infection_comp * infection_rate
+    Q = zeros(Float64, n_infection_comp + 1, n_infection_comp + 1)
+    Q[1,1] = -exposed_rate
+    Q[1,2] = exposed_rate
+    for i in 2:(n_infection_comp + 1)
+        Q[i,i] = -nu
+        if i < (n_infection_comp + 1)
+            Q[i,i+1] = nu
+        end
+    end
+    
+    init_vec = zeros(Float64, n_infection_comp + 1)
+    init_vec[1] = 1.0
+
+    infectious_selector = zeros(Float64, n_infection_comp + 1)
+    infectious_selector[2:end] .= 1.0
+
+    τ = Vector{Float64}(undef, length(grid_a))
+    for i in eachindex(grid_a)
+        ai = grid_a[i]
+        exp_Q = exp(Q * ai)
+        τ[i] = init_vec' * exp_Q * infectious_selector
+    end
+
+    return τ
+end

@@ -30,15 +30,12 @@ function fit(
     data_wastewater,
     dates_wastewater,
     obstime_wastewater,
-    grid_t,
-    grid_a,
-    g,
     s,
-    γ_prior,
+    Rₜ_prior_model,
+    τ_prior_model,
     i0_prior,
     σ_ww_prior,
-    R₀_prior,
-    σ_Rₜ_prior,
+    α_prior,
     priors_only::Bool=false,
     n_samples::Int64=500, n_chains::Int64=1,
     n_discard_initial::Int64=0, seed::Int64=2024,
@@ -51,29 +48,20 @@ function fit(
     elseif dates_wastewater !== nothing && obstime_wastewater !== nothing
         throw(ArgumentError("Must provide either dates_wastewater or obstime_wastewater, not both!!!"))
     elseif dates_wastewater !== nothing
-        weeks = trunc(Int, (maximum(dates_wastewater) - minimum(dates_wastewater)).value / 7.0)
         obstime_wastewater = Dates.value.(dates_wastewater .- minimum(dates_wastewater)) .+ 1
-    else 
-        weeks = trunc(Int, maximum(obstime_wastewater) / 7.0)
     end
-    param_change_points = collect(1:7:(weeks*7)) # Weekly change points for Rₜ
-    param_change_points = convert(Vector{Float64}, param_change_points)
     obstime_wastewater = convert(Vector{Float64}, obstime_wastewater)
 
     # Model and Sampling-----------------------------
     my_model = mvf_infection_age_model(
         data_wastewater = data_wastewater,
         obstime_wastewater = obstime_wastewater,
-        param_change_points = param_change_points,
-        grid_t = grid_t,
-        grid_a = grid_a,
-        g = g,
         s = s,
-        γ_prior = γ_prior,
+        Rₜ_prior_model = Rₜ_prior_model,
+        τ_prior_model = τ_prior_model,
         i0_prior = i0_prior,
         σ_ww_prior = σ_ww_prior,
-        R₀_prior = R₀_prior,
-        σ_Rₜ_prior = σ_Rₜ_prior
+        α_prior = α_prior
     )
     # Sampling
     if priors_only

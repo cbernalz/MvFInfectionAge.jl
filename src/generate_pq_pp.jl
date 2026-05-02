@@ -26,23 +26,17 @@ function generate_pq_pp(
     samples,
     data_wastewater,
     obstime_wastewater,
-    grid_t,
-    grid_a,
-    g,
     s,
-    γ_prior,
+    Rₜ_prior_model,
+    τ_prior_model,
     i0_prior,
     σ_ww_prior,
-    R₀_prior,
-    σ_Rₜ_prior;
+    α_prior;
     seed::Int64=2024,
     forecast::Bool=false, forecast_days::Int64=14
 )
 
     # Obstime processing-----------------------------
-    weeks = trunc(Int, maximum(obstime_wastewater) / 7.0)
-    param_change_points = collect(1:7:(weeks*7)) # Weekly change points for Rₜ
-    param_change_points = convert(Vector{Float64}, param_change_points)
     obstime_wastewater = convert(Vector{Float64}, obstime_wastewater)
 
     if forecast
@@ -56,30 +50,22 @@ function generate_pq_pp(
     my_model = mvf_infection_age_model(
         data_wastewater = data_wastewater,
         obstime_wastewater = obstime_wastewater,
-        param_change_points = param_change_points,
-        grid_t = grid_t,
-        grid_a = grid_a,
-        g = g,
         s = s,
-        γ_prior = γ_prior,
+        Rₜ_prior_model = Rₜ_prior_model,
+        τ_prior_model = τ_prior_model,
         i0_prior = i0_prior,
         σ_ww_prior = σ_ww_prior,
-        R₀_prior = R₀_prior,
-        σ_Rₜ_prior = σ_Rₜ_prior
+        α_prior = α_prior
     )
     my_model_forecast_missing = mvf_infection_age_model(
         data_wastewater = missing_data_wastewater,
         obstime_wastewater = obstime_wastewater,
-        param_change_points = param_change_points,
-        grid_t = grid_t,
-        grid_a = grid_a,
-        g = g,
         s = s,
-        γ_prior = γ_prior,
+        Rₜ_prior_model = Rₜ_prior_model,
+        τ_prior_model = τ_prior_model,
         i0_prior = i0_prior,
         σ_ww_prior = σ_ww_prior,
-        R₀_prior = R₀_prior,
-        σ_Rₜ_prior = σ_Rₜ_prior
+        α_prior = α_prior
     )
 
     samples_df = DataFrame(samples)
