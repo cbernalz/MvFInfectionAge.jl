@@ -105,12 +105,13 @@ end
     σ = exp(σ_non_centered * σ_prior.sd + σ_prior.mean)
 
     τ = (grid_a .^ ((μ^2 / σ^2) - 1)) .* exp.(-grid_a ./ (σ^2 / μ))
-    τ = τ / (h * sum(τ))
+    inf_prob = τ / (h * sum(τ))
 
     return (
         grid_t = grid_t,
         grid_a = grid_a,
         τ = τ,
+        inf_prob = inf_prob,
         params = (μ = μ, σ = σ)
     )
 end
