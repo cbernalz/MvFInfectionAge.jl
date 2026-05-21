@@ -26,30 +26,25 @@ This is the bayesian semi-parametric model for the McKendric-von Foerster infect
     s::Vector{Float64},
     Rₜ_prior_model,
     τ_prior_model,
-    i0_prior = (mean = log(6000.0), sd = 0.5),
-    σ_ww_prior = (mean = log(0.1), sd = 0.5),
-    α_prior = (mean = log(0.3), sd = 0.5)
+    g_prior_model,
+    σ_ww_prior = (mean = log(0.1), sd = 0.5)
     )
 
         # PRIORS-----------------------------
-        i0_non_centered ~ Normal()
         σ_ww_non_centered ~ Normal()
-        α_non_centered ~ Normal()
         Rₜ_module ~ to_submodel(Rₜ_prior_model)
         τ_module ~ to_submodel(τ_prior_model)
+        g_module ~ to_submodel(g_prior_model)
 
         # TRANSFORMATIONS-----------------------------
         trans = likelihood_helper(
             obstime_wastewater,
             s,
-            i0_prior,
             σ_ww_prior,
-            α_prior,
-            i0_non_centered,
             σ_ww_non_centered,
-            α_non_centered,
             Rₜ_module,
-            τ_module
+            τ_module,
+            g_module
         )
         # Reject if the helper function failed and skip sample
         if !trans.success
@@ -65,12 +60,14 @@ This is the bayesian semi-parametric model for the McKendric-von Foerster infect
 
         return (
             log_W_means = trans.log_W_means, I_means = trans.I_means, 
+            inf_prob = trans.inf_prob,
             τ = trans.τ, c_t = trans.c_t, 
-            g = trans.g, α = trans.α,
+            g = trans.g,
             Rₜ = trans.Rₜ,
-            Rₜ_params = Rₜ_module.params,
+            Rₜ_params = trans.Rₜ_params,
             τ_params = trans.τ_params,
-            i0 = trans.i0, σ_ww = trans.σ_ww
+            g_params = trans.g_params,
+            σ_ww = trans.σ_ww
         )
 
     end

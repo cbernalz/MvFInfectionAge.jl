@@ -24,6 +24,7 @@ include("optimize_many_MAP.jl")
 include("rt_prior_models.jl")
 include("tau_prior_models.jl")
 include("MvFIA_fit_generate.jl")
+include("g_prior_models.jl")
 
 export simulate_mvf_pde, default_τcg, create_grid, likelihood_helper, mvf_infection_age_model
 export MvFIA_fit_generate
@@ -31,4 +32,6 @@ export optimize_many_MAP2_wrapper, optimize_many_MAP2, optimize_many_MAP, Chains
 export bisect_root, create_phase_type_τ
 export Rₜ_rw_prior_model, Rₜ_ibm_prior_model, Rₜ_ibm_prior_model_loop
 export τ_exp_prior_model, τ_phase_type_prior_model, τ_gamma_prior_model
-end
+export g_exp_prior_model, g_weighted_uniform_prior_model, g_uniform_prior_model
+
+end 

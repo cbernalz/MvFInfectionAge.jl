@@ -21,15 +21,23 @@ This function defines a prior model for the infection-age dependent shedding pro
     grid_a;
     γ_prior = (mean = log(0.2), sd = 0.5)
 )
+    h = grid_a[2] - grid_a[1]
+
     γ_non_centered ~ Normal()
     γ = exp(γ_non_centered * γ_prior.sd + γ_prior.mean)
 
-    τ = exp.(-γ .* grid_a)
+    τ = γ .* exp.(-γ .* grid_a)
+    τ = τ / (sum(τ) * h)
+
+    cdf = cumsum(τ) .* h
+    inf_prob = 1 .- cdf
+    inf_prob = vcat(1.0, inf_prob[1:end-1])
 
     return (
         grid_t = grid_t,
         grid_a = grid_a,
         τ = τ,
+        inf_prob = inf_prob,
         params = (γ = γ,)
     )
 end
@@ -43,6 +51,7 @@ end
     exposed_rate_prior = (mean = log(1/7), sd = 0.25),
     infection_rate_prior = (mean = log(1/7), sd = 0.25)
 )
+    h = grid_a[2] - grid_a[1]
 
     ## PRIORS-----------------------------
     exposed_rate_non_centered ~ Normal()
@@ -64,21 +73,21 @@ end
         end
     end
     
-    init_vec = zeros(Float64, n_infection_comp + 1)
-    init_vec[1] = 1.0
-
     infectious_selector = zeros(Float64, n_infection_comp + 1)
-    infectious_selector[2:end] .= 1.0
+    infectious_selector[2:end] .= one(Float64)
 
-    inf_prob = Vector{Float64}(undef, length(grid_a))
     τ = Vector{Float64}(undef, length(grid_a))
     for i in eachindex(grid_a)
         ai = grid_a[i]
         exp_Q = exp(Q * ai)
-        inf_prob[i] = infectious_selector' * exp_Q * infectious_selector
-        τ[i] = init_vec' * exp_Q * infectious_selector
+        τ[i] = dot(init_vec, exp_Q * infectious_selector)
     end
-    inf_prob = inf_prob / sum(inf_prob * (grid_a[2] - grid_a[1]))
+
+    τ = τ ./ (sum(τ) * h)
+    
+    cdf = cumsum(τ) .* h
+    inf_prob = 1 .- cdf
+    inf_prob = vcat(1.0, inf_prob[1:end-1])
     
     return (
         grid_t = grid_t,
@@ -104,8 +113,14 @@ end
     μ = exp(μ_non_centered * μ_prior.sd + μ_prior.mean)
     σ = exp(σ_non_centered * σ_prior.sd + σ_prior.mean)
 
-    τ = (grid_a .^ ((μ^2 / σ^2) - 1)) .* exp.(-grid_a ./ (σ^2 / μ))
-    inf_prob = τ / (h * sum(τ))
+    grid_a_safe = max.(grid_a, eps())
+
+    τ = (grid_a_safe .^ ((μ^2 / σ^2) - 1)) .* exp.(-grid_a_safe ./ (σ^2 / μ))
+    τ = τ / (sum(τ) * h)
+
+    cdf = cumsum(τ) .* h
+    inf_prob = 1 .- cdf
+    inf_prob = vcat(1.0, inf_prob[1:end-1])
 
     return (
         grid_t = grid_t,

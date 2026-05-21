@@ -8,15 +8,11 @@ Arguments:
 function likelihood_helper(
     obstimes_wastewater,
     s,
-    i0_prior,
     σ_ww_prior,
-    α_prior,
-    i0_non_centered,
     σ_ww_non_centered,
-    α_non_centered,
     Rₜ_module,
-    τ_module
-
+    τ_module,
+    g_module
 )
     try
         h = τ_module.grid_t[2] - τ_module.grid_t[1]
@@ -31,10 +27,11 @@ function likelihood_helper(
         if any(x -> x === nothing, ww_inx)
             throw(ArgumentError("All obstimes_wastewater must be present in grid_t."))
         end
+        if length(g_module.g) != length(τ_module.grid_a)
+            throw(ArgumentError("g_module.g must have same length as τ_module.grid_a."))
+        end
 
-        i0 = exp(i0_non_centered * i0_prior.sd + i0_prior.mean)
         σ_ww = exp(σ_ww_non_centered * σ_ww_prior.sd + σ_ww_prior.mean)
-        α = exp(α_non_centered * α_prior.sd + α_prior.mean)
 
         τ = τ_module.τ
 
@@ -46,14 +43,6 @@ function likelihood_helper(
 
         c_itp = linear_interpolation(Rₜ_module.timebreaks, c; extrapolation_bc = Interpolations.Flat()) ## can also be Line() to follow the slope of the last two points instead of flat extrapolation; Interpolations is used for package issues
         c_t = c_itp.(τ_module.grid_t)
- 
-        # initial condition scaled by i0
-        #f(α) = h * sum(exp.(-α .* τ_module.grid_a) .* ForwardDiff.value.(τ)) - 1.0
-        #α = bisect_root(f, 1e-8, 1.0)
-        #α = fzero(f, 0.1)
-        #α = 0.3
-        g = α .* exp.(-α .* τ_module.grid_a)
-        g_scaled = i0 .* g
 
         # infection probability
         inf_prob = τ_module.inf_prob
@@ -63,7 +52,7 @@ function likelihood_helper(
             τ_module.grid_a,
             τ,
             c_t,
-            g_scaled,
+            g_module.g,
             ww_inx,
             inf_prob,
             s,
@@ -73,14 +62,14 @@ function likelihood_helper(
             success = true,
             log_W_means = sim.log_W_means,
             I_means = sim.I_means,
+            inf_prob = inf_prob,
             τ = τ,
             c_t = c_t,
-            g = g_scaled,
-            α = α,
+            g = g_module.g,
             Rₜ = Rₜ_module.Rₜ,
             Rₜ_params = Rₜ_module.params,
             τ_params = τ_module.params,
-            i0 = i0,
+            g_params = g_module.params,
             σ_ww = σ_ww
         )
 
