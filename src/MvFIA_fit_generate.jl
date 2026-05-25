@@ -32,8 +32,7 @@ function MvFIA_fit_generate(
     obstime_wastewater,
     s,
     Rₜ_prior_model,
-    τ_prior_model,
-    g_prior_model,
+    pde_internals_prior_model,
     σ_ww_prior;
     n_samples::Int64=500, n_chains::Int64=1,
     n_discard_initial::Int64=0, seed::Int64=2024,
@@ -74,8 +73,7 @@ function MvFIA_fit_generate(
         obstime_wastewater = obstime_wastewater,
         s = s,
         Rₜ_prior_model = Rₜ_prior_model,
-        τ_prior_model = τ_prior_model,
-        g_prior_model = g_prior_model,
+        pde_internals_prior_model = pde_internals_prior_model,
         σ_ww_prior = σ_ww_prior
     )
 
@@ -84,8 +82,7 @@ function MvFIA_fit_generate(
         obstime_wastewater = obstime_wastewater_pred,
         s = s,
         Rₜ_prior_model = Rₜ_prior_model,
-        τ_prior_model = τ_prior_model,
-        g_prior_model = g_prior_model,
+        pde_internals_prior_model = pde_internals_prior_model,
         σ_ww_prior = σ_ww_prior
     )
 
@@ -94,8 +91,7 @@ function MvFIA_fit_generate(
         obstime_wastewater = obstime_wastewater_pred,
         s = s,
         Rₜ_prior_model = Rₜ_prior_model,
-        τ_prior_model = τ_prior_model,
-        g_prior_model = g_prior_model,
+        pde_internals_prior_model = pde_internals_prior_model,
         σ_ww_prior = σ_ww_prior
     )
 

@@ -1,5 +1,6 @@
 @model function g_exp_prior_model(
-    grid_a;
+    grid_a,
+    inf_prob;
     α_prior = (mean = log(0.3), sd = 0.5),
     i0_prior = (mean = log(6000.0), sd = 0.5)
 )
@@ -12,7 +13,7 @@
     i0 = exp(i0_non_centered * i0_prior.sd + i0_prior.mean)
 
     g = α .* exp.(-α .* grid_a)
-    g = g ./ (h_a * sum(g))
+    g = g / (h_a * sum(g .* inf_prob))
     g_scaled = i0 .* g
 
     return (

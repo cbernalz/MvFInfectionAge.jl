@@ -25,16 +25,14 @@ This is the bayesian semi-parametric model for the McKendric-von Foerster infect
     obstime_wastewater,
     s::Vector{Float64},
     Rₜ_prior_model,
-    τ_prior_model,
-    g_prior_model,
+    pde_internals_prior_model,
     σ_ww_prior = (mean = log(0.1), sd = 0.5)
     )
 
         # PRIORS-----------------------------
         σ_ww_non_centered ~ Normal()
         Rₜ_module ~ to_submodel(Rₜ_prior_model)
-        τ_module ~ to_submodel(τ_prior_model)
-        g_module ~ to_submodel(g_prior_model)
+        pde_internals_module ~ to_submodel(pde_internals_prior_model)
 
         # TRANSFORMATIONS-----------------------------
         trans = likelihood_helper(
@@ -43,8 +41,7 @@ This is the bayesian semi-parametric model for the McKendric-von Foerster infect
             σ_ww_prior,
             σ_ww_non_centered,
             Rₜ_module,
-            τ_module,
-            g_module
+            pde_internals_module
         )
         # Reject if the helper function failed and skip sample
         if !trans.success
