@@ -32,7 +32,7 @@ export MvFIA_fit_generate
 export optimize_many_MAP2_wrapper, optimize_many_MAP2, optimize_many_MAP, ChainsCustomIndex
 export bisect_root, create_phase_type_τ
 export Rₜ_rw_prior_model, Rₜ_ibm_prior_model, Rₜ_ibm_prior_model_loop
-export τ_gamma_g_exp_prior_model
+export τ_gamma_g_exp_prior_model, τ_gamma_g_gamma_prior_model
 #export τ_exp_prior_model, τ_phase_type_prior_model, τ_gamma_prior_model
 #export g_exp_prior_model, g_weighted_uniform_prior_model, g_uniform_prior_model
 
