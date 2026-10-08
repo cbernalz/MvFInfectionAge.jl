@@ -56,7 +56,7 @@ This is the bayesian semi-parametric model for the McKendric-von Foerster infect
 
         # Likelihood calculations------------
         for i in 1:length(obstime_wastewater)
-            data_wastewater[i] ~ Normal(trans.log_W_means[i] + log(trans.ρ), trans.σ_ww)
+            data_wastewater[i] ~ Normal(trans.log_W_means[i] + trans.ρ, trans.σ_ww)
         end
 
         return (
