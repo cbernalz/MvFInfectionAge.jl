@@ -26,11 +26,13 @@ This is the bayesian semi-parametric model for the McKendric-von Foerster infect
     s::Vector{Float64},
     Rₜ_prior_model,
     pde_internals_prior_model,
-    σ_ww_prior = (mean = log(0.1), sd = 0.5)
+    σ_ww_prior = (mean = log(0.1), sd = 0.5),
+    ρ_prior = (mean = log(1), sd = 0.025)
     )
 
         # PRIORS-----------------------------
         σ_ww_non_centered ~ Normal()
+        ρ_non_centered ~ Normal()
         Rₜ_module ~ to_submodel(Rₜ_prior_model)
         pde_internals_module ~ to_submodel(pde_internals_prior_model)
 
@@ -40,6 +42,8 @@ This is the bayesian semi-parametric model for the McKendric-von Foerster infect
             s,
             σ_ww_prior,
             σ_ww_non_centered,
+            ρ_prior,
+            ρ_non_centered,
             Rₜ_module,
             pde_internals_module
         )
@@ -52,7 +56,7 @@ This is the bayesian semi-parametric model for the McKendric-von Foerster infect
 
         # Likelihood calculations------------
         for i in 1:length(obstime_wastewater)
-            data_wastewater[i] ~ Normal(trans.log_W_means[i], trans.σ_ww)
+            data_wastewater[i] ~ Normal(trans.log_W_means[i] + log(trans.ρ), trans.σ_ww)
         end
 
         return (
@@ -64,7 +68,8 @@ This is the bayesian semi-parametric model for the McKendric-von Foerster infect
             Rₜ_params = trans.Rₜ_params,
             τ_params = trans.τ_params,
             g_params = trans.g_params,
-            σ_ww = trans.σ_ww
+            σ_ww = trans.σ_ww,
+            ρ = trans.ρ,
         )
 
     end

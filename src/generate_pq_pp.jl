@@ -31,6 +31,7 @@ function generate_pq_pp(
     τ_prior_model,
     i0_prior,
     σ_ww_prior,
+    ρ_prior,
     α_prior;
     seed::Int64=2024,
     forecast::Bool=false, forecast_days::Int64=14
@@ -55,6 +56,7 @@ function generate_pq_pp(
         τ_prior_model = τ_prior_model,
         i0_prior = i0_prior,
         σ_ww_prior = σ_ww_prior,
+        ρ_prior = ρ_prior,
         α_prior = α_prior
     )
     my_model_forecast_missing = mvf_infection_age_model(
@@ -65,6 +67,7 @@ function generate_pq_pp(
         τ_prior_model = τ_prior_model,
         i0_prior = i0_prior,
         σ_ww_prior = σ_ww_prior,
+        ρ_prior = ρ_prior,
         α_prior = α_prior
     )
 

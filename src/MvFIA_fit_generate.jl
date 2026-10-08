@@ -33,7 +33,8 @@ function MvFIA_fit_generate(
     s,
     Rₜ_prior_model,
     pde_internals_prior_model,
-    σ_ww_prior;
+    σ_ww_prior,
+    ρ_prior;
     n_samples::Int64=500, n_chains::Int64=1,
     n_discard_initial::Int64=0, seed::Int64=2024,
     init_params=nothing, 
@@ -74,7 +75,8 @@ function MvFIA_fit_generate(
         s = s,
         Rₜ_prior_model = Rₜ_prior_model,
         pde_internals_prior_model = pde_internals_prior_model,
-        σ_ww_prior = σ_ww_prior
+        σ_ww_prior = σ_ww_prior,
+        ρ_prior = ρ_prior
     )
 
     my_model_gq = mvf_infection_age_model(
@@ -83,7 +85,8 @@ function MvFIA_fit_generate(
         s = s,
         Rₜ_prior_model = Rₜ_prior_model,
         pde_internals_prior_model = pde_internals_prior_model,
-        σ_ww_prior = σ_ww_prior
+        σ_ww_prior = σ_ww_prior,
+        ρ_prior = ρ_prior
     )
 
     my_model_predictive = mvf_infection_age_model(
@@ -92,7 +95,8 @@ function MvFIA_fit_generate(
         s = s,
         Rₜ_prior_model = Rₜ_prior_model,
         pde_internals_prior_model = pde_internals_prior_model,
-        σ_ww_prior = σ_ww_prior
+        σ_ww_prior = σ_ww_prior,
+        ρ_prior = ρ_prior
     )
 
     timing = Dict{Symbol, Float64}()
