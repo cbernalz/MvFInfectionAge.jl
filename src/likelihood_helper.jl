@@ -11,7 +11,7 @@ function likelihood_helper(
     σ_ww_prior,
     σ_ww_non_centered,
     ρ_prior,
-    ρ_non_centered,
+    ρ,
     Rₜ_module,
     pde_internals_module
 )
@@ -33,7 +33,6 @@ function likelihood_helper(
         end
 
         σ_ww = exp(σ_ww_non_centered * σ_ww_prior.sd + σ_ww_prior.mean)
-        ρ = exp(ρ_non_centered * ρ_prior.sd + ρ_prior.mean)
 
         τ = pde_internals_module.τ
 

@@ -27,12 +27,12 @@ This is the bayesian semi-parametric model for the McKendric-von Foerster infect
     Rₜ_prior_model,
     pde_internals_prior_model,
     σ_ww_prior = (mean = log(0.1), sd = 0.5),
-    ρ_prior = (mean = log(1), sd = 0.025)
+    ρ_prior = (mean = 1, sd = 1)
     )
 
         # PRIORS-----------------------------
         σ_ww_non_centered ~ Normal()
-        ρ_non_centered ~ Normal()
+        ρ ~ Gamma(ρ_prior.mean^2 / ρ_prior.sd^2, ρ_prior.sd^2 / ρ_prior.mean)
         Rₜ_module ~ to_submodel(Rₜ_prior_model)
         pde_internals_module ~ to_submodel(pde_internals_prior_model)
 
@@ -43,7 +43,7 @@ This is the bayesian semi-parametric model for the McKendric-von Foerster infect
             σ_ww_prior,
             σ_ww_non_centered,
             ρ_prior,
-            ρ_non_centered,
+            ρ,
             Rₜ_module,
             pde_internals_module
         )
