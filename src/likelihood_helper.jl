@@ -11,6 +11,7 @@ function likelihood_helper(
     σ_ww_prior,
     σ_ww_non_centered,
     ρ_prior,
+    ρ_non_centered,
     Rₜ_module,
     pde_internals_module
 )
